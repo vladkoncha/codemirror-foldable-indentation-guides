@@ -45,11 +45,11 @@ export class ClickableIndentationGuideWidget extends WidgetType {
       );
       button.style.setProperty(
         '--border-active-width',
-        `${this.styles?.activeThickness ?? 1}px`
+        `${this.styles?.activeThickness ?? this.styles?.thickness ?? 1}px`
       );
       button.style.setProperty(
         '--border-hover-width',
-        `${this.styles?.hoverThickness ?? 1}px`
+        `${this.styles?.hoverThickness ?? this.styles?.thickness ?? 1}px`
       );
       button.style.setProperty(
         '--additional-padding',
