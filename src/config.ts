@@ -75,26 +75,6 @@ export interface IndentationGuidesConfiguration {
     dark?: string;
 
     /**
-     * Color of active background when using a light theme.
-     */
-    backgroundLight?: string;
-
-    /**
-     * Color of active background when using a dark theme.
-     */
-    backgroundDark?: string;
-
-    /**
-     * Color of hovered background when using a light theme.
-     */
-    backgroundHoverLight?: string;
-
-    /**
-     * Color of hovered background when using a dark theme.
-     */
-    backgroundHoverDark?: string;
-
-    /**
      * Color of active indent markers when using a light theme.
      */
     activeLight?: string;
@@ -113,6 +93,26 @@ export interface IndentationGuidesConfiguration {
      * Color of hovered indent markers when using a light theme.
      */
     hoverDark?: string;
+
+    /**
+     * Color of active background when using a light theme.
+     */
+    backgroundLight?: string;
+
+    /**
+     * Color of active background when using a dark theme.
+     */
+    backgroundDark?: string;
+
+    /**
+     * Color of hovered background when using a light theme.
+     */
+    backgroundHoverLight?: string;
+
+    /**
+     * Color of hovered background when using a dark theme.
+     */
+    backgroundHoverDark?: string;
   };
 }
 
