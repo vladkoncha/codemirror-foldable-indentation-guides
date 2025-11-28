@@ -30,9 +30,11 @@
   "devDependencies": {
     "@codemirror/buildhelper": "^0.1.16",
     "@codemirror/commands": "^6.0.0",
+    "@codemirror/lang-html": "^6.4.11",
+    "@codemirror/lang-cpp": "^6.0.3",
     "@codemirror/lang-css": "^6.0.0",
-    "@codemirror/lang-python": "^6.1.1",
     "@codemirror/lang-javascript": "^6.2.4",
+    "@codemirror/lang-python": "^6.1.1",
     "@codemirror/language": "^6.0.0",
     "@codemirror/state": "^6.0.0",
     "@codemirror/view": "^6.0.0",
