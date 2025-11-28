@@ -3,3 +3,4 @@ dist
 .upm
 .config
 .cache
+.DS_Store

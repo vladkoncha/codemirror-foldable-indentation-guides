@@ -1,6 +1,5 @@
-import { EditorState, Line } from '@codemirror/state';
-import { getCurrentLine, numColumns } from './utils';
-import {indentationMarkerConfig} from "./config";
+import { Line, EditorState } from '@codemirror/state';
+import { numColumns } from './utils';
 
 export interface IndentEntry {
   line: Line;
@@ -33,7 +32,7 @@ export class IndentationMap {
   private unitWidth: number;
 
   /** The type of indentation to use (terminate at end of scope vs last non-empty line in scope) */
-  private markerType: "fullScope" | "codeOnly";
+  private markerType: 'fullScope' | 'codeOnly';
 
   /**
    * @param lines - The set of lines to get the indentation map for.
@@ -41,7 +40,12 @@ export class IndentationMap {
    * @param unitWidth - The width of the editor's indent unit.
    * @param markerType - The type of indentation to use (terminate at end of scope vs last line of code in scope)
    */
-  constructor(lines: Set<Line>, state: EditorState, unitWidth: number, markerType: "fullScope" | "codeOnly") {
+  constructor(
+    lines: Set<Line>,
+    state: EditorState,
+    unitWidth: number,
+    markerType: 'fullScope' | 'codeOnly'
+  ) {
     this.lines = lines;
     this.state = state;
     this.map = new Map();
@@ -50,10 +54,6 @@ export class IndentationMap {
 
     for (const line of this.lines) {
       this.add(line);
-    }
-
-    if (this.state.facet(indentationMarkerConfig).highlightActiveBlock) {
-      this.findAndSetActiveLines();
     }
   }
 
@@ -126,8 +126,8 @@ export class IndentationMap {
       const next = this.closestNonEmpty(line, 1);
 
       // if the next line ends the block and the marker type is not set to codeOnly,
-        // we'll just use the previous line's indentation
-      if (prev.level >= next.level && this.markerType !== "codeOnly" ) {
+      // we'll just use the previous line's indentation
+      if (prev.level >= next.level && this.markerType !== 'codeOnly') {
         return this.set(line, 0, prev.level);
       }
 
@@ -196,12 +196,10 @@ export class IndentationMap {
   }
 
   /**
-   * Finds the state's active block (via the current selection) and sets all
+   * Finds the state's active block (via the currentLine) and sets all
    * the active indent level for the lines in the block.
    */
-  private findAndSetActiveLines() {
-    const currentLine = getCurrentLine(this.state);
-
+  getActiveLinesNumbers(currentLine: number) {
     if (!this.has(currentLine)) {
       return;
     }
@@ -230,6 +228,7 @@ export class IndentationMap {
     }
 
     current.active = current.level;
+    const lines: IndentEntry[] = [current];
 
     let start: number;
     let end: number;
@@ -247,6 +246,7 @@ export class IndentationMap {
       }
 
       prev.active = current.level;
+      lines.push(prev);
     }
 
     // iterate to the end of the block
@@ -262,6 +262,9 @@ export class IndentationMap {
       }
 
       next.active = current.level;
+      lines.push(next);
     }
+
+    return lines;
   }
 }
