@@ -1,5 +1,46 @@
-import { EditorState, Line } from '@codemirror/state';
+import {
+  foldEffect,
+  foldState,
+  foldable,
+  foldedRanges,
+  unfoldEffect,
+} from '@codemirror/language';
+import { Line, EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
+
+const getVisibleFoldedRanges = (view: EditorView) => {
+  const foldedRanges = view.state.field(foldState, false);
+  if (!foldedRanges || foldedRanges.size === 0) {
+    return [];
+  }
+
+  const visibleRanges = view.visibleRanges;
+  if (!visibleRanges?.length) {
+    return [];
+  }
+
+  const visibleFoldedRanges: { from: number; to: number }[] = [];
+
+  foldedRanges.between(
+    visibleRanges[0].from,
+    visibleRanges[visibleRanges.length - 1].to,
+    (from, to) => {
+      for (const visibleRange of visibleRanges) {
+        /** If pushed without this check, it will break inner folded ranges */
+        if (
+          (from >= visibleRange.from && from <= visibleRange.to) ||
+          (to >= visibleRange.from && to <= visibleRange.to) ||
+          (from <= visibleRange.from && to >= visibleRange.to)
+        ) {
+          visibleFoldedRanges.push({ from, to });
+          break;
+        }
+      }
+    }
+  );
+
+  return visibleFoldedRanges;
+};
 
 /**
  * Gets the visible lines in the editor. Lines will not be repeated.
@@ -8,23 +49,54 @@ import { EditorView } from '@codemirror/view';
  * @param state - The editor state. Defaults to the view's current one.
  */
 export function getVisibleLines(view: EditorView, state = view.state) {
-  const lines = new Set<Line>();
+  const lines = new Map<Line['number'], Line>();
 
-  for (const { from, to } of view.visibleRanges) {
+  const foldedRanges = getVisibleFoldedRanges(view);
+  const allVisibleRanges = [...view.visibleRanges, ...foldedRanges].sort(
+    (a, b) => a.from - b.from
+  );
+
+  for (const { from, to } of allVisibleRanges) {
     let pos = from;
 
     while (pos <= to) {
       const line = state.doc.lineAt(pos);
-
-      if (!lines.has(line)) {
-        lines.add(line);
-      }
+      lines.set(line.number, line);
 
       pos = line.to + 1;
     }
   }
 
-  return lines;
+  return new Set(lines.values());
+}
+
+/**
+ * Gets all lines between the cursor position and viewport in the editor. Lines will not be repeated.
+ *
+ * @param view - The editor view to get the visible lines from.
+ * @param state - The editor state. Defaults to the view's current one.
+ */
+export function getAllLines(view: EditorView, state = view.state) {
+  const lines = new Map<Line['number'], Line>();
+
+  const lineRanges = [];
+  for (let i = 1; i <= state.doc.lines; i++) {
+    const line = state.doc.line(i);
+    lineRanges.push({ from: line.from, to: line.to });
+  }
+
+  for (const { from, to } of lineRanges) {
+    let pos = from;
+
+    while (pos <= to) {
+      const line = state.doc.lineAt(pos);
+      lines.set(line.number, line);
+
+      pos = line.to + 1;
+    }
+  }
+
+  return new Set(lines.values());
 }
 
 /**
@@ -82,4 +154,82 @@ export function numColumns(str: string, tabSize: number) {
   }
 
   return col;
+}
+
+export function getNearestFoldRange(
+  view: EditorView,
+  lineNumber: number,
+  state = view.state
+): { from: number; to: number } | null {
+  const line = state.doc.line(lineNumber);
+  const range = foldable(state, line.from, line.to);
+  if (range) {
+    return range;
+  }
+
+  // if the line itself isn't foldable, walk upward to find parent fold
+  for (let l = lineNumber - 1; l > 0; l--) {
+    const up = state.doc.line(l);
+    const r = foldable(state, up.from, up.to);
+    if (r && r.from <= line.from && r.to >= line.to) {
+      return r;
+    }
+  }
+
+  return null;
+}
+
+export function isLineFolded(view: EditorView, lineNumber: number): boolean {
+  const state = view.state;
+  const foldField = state.field(foldState, false);
+  if (!foldField) {
+    return false;
+  }
+
+  let folded = false;
+  foldField.between(0, state.doc.length, (from, to) => {
+    const fromLine = state.doc.lineAt(from).number;
+    const toLine = state.doc.lineAt(to).number;
+
+    if (lineNumber >= fromLine && lineNumber <= toLine) {
+      folded = true;
+      return false;
+    }
+  });
+
+  return folded;
+}
+
+export function isLineEmpty(view: EditorView, lineNumber: number) {
+  const lineText = view.state.doc.line(lineNumber).text;
+  return /^\s*$/.test(lineText);
+}
+
+export function toggleFoldRange(
+  view: EditorView,
+  range: { from: number; to: number }
+) {
+  const { from, to } = range;
+  const folded = foldedRanges(view.state);
+  let covering = false;
+  folded.between(from, to, (fromPos, toPos) => {
+    if (fromPos <= from && toPos >= to) {
+      covering = true;
+    }
+  });
+  if (covering) {
+    view.dispatch({
+      effects: [
+        unfoldEffect.of(range),
+        EditorView.scrollIntoView(range.from, { y: 'nearest' }),
+      ],
+    });
+  } else {
+    view.dispatch({
+      effects: [
+        foldEffect.of(range),
+        EditorView.scrollIntoView(range.from, { y: 'nearest' }),
+      ],
+    });
+  }
 }

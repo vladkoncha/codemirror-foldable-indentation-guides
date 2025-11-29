@@ -1,10 +1,10 @@
 {
-  "name": "@replit/codemirror-indentation-markers",
-  "description": "Render indentation markers in CodeMirror",
-  "version": "6.5.3",
+  "name": "codemirror-foldable-indentation-guides",
+  "description": "Render foldable indentation guides in CodeMirror",
+  "version": "1.0.0",
   "author": {
-    "name": "Sergei Chestakov",
-    "email": "me@sergei.com"
+    "name": "Vladislav Koncha",
+    "email": "vla.koncha@gmail.com"
   },
   "type": "module",
   "main": "dist/index.cjs",
@@ -30,7 +30,10 @@
   "devDependencies": {
     "@codemirror/buildhelper": "^0.1.16",
     "@codemirror/commands": "^6.0.0",
+    "@codemirror/lang-html": "^6.4.11",
+    "@codemirror/lang-cpp": "^6.0.3",
     "@codemirror/lang-css": "^6.0.0",
+    "@codemirror/lang-javascript": "^6.2.4",
     "@codemirror/lang-python": "^6.1.1",
     "@codemirror/language": "^6.0.0",
     "@codemirror/state": "^6.0.0",
@@ -40,6 +43,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/replit/codemirror-indentation-markers.git"
+    "url": "https://github.com/vladkoncha/codemirror-foldable-indentation-guides.git"
   }
 }
