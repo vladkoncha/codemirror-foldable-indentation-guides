@@ -280,26 +280,24 @@ export class IndentationViewPlugin implements PluginValue {
   }
 
   clearHoverClasses() {
-    if (this.hoveredGuide?.col !== null) {
-      const dom = this.view.dom;
-
-      dom
-        .querySelectorAll('.cm-indentation-guide-button_hover')
-        .forEach(el =>
-          el.classList.remove('cm-indentation-guide-button_hover')
-        );
-      this.hoveredGuide = null;
-
-      dom
-        .querySelectorAll<HTMLElement>(
-          '.cm-indentation-guide-background-highlight'
-        )
-        .forEach(el => {
-          el.classList.remove(
-            'cm-indentation-guide-background-highlight_hover'
-          );
-        });
+    if (this.hoveredGuide?.col === null) {
+      return;
     }
+
+    const dom = this.view.dom;
+
+    dom
+      .querySelectorAll('.cm-indentation-guide-button_hover')
+      .forEach(el => el.classList.remove('cm-indentation-guide-button_hover'));
+    this.hoveredGuide = null;
+
+    dom
+      .querySelectorAll<HTMLElement>(
+        '.cm-indentation-guide-background-highlight'
+      )
+      .forEach(el => {
+        el.classList.remove('cm-indentation-guide-background-highlight_hover');
+      });
   }
 }
 
@@ -332,10 +330,9 @@ export const indentationGuidesPlugin = ViewPlugin.fromClass(
       },
 
       mouseout: (e, view) => {
-        const { highlightHoveredMarker } = view.state.facet(
-          indentationGuidesConfig
-        );
-        if (!highlightHoveredMarker) {
+        const { highlightHoveredMarker, highlightHoveredBlockBackground } =
+          view.state.facet(indentationGuidesConfig);
+        if (!highlightHoveredMarker && !highlightHoveredBlockBackground) {
           return;
         }
 
