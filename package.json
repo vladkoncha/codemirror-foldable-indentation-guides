@@ -2,6 +2,15 @@
   "name": "codemirror-foldable-indentation-guides",
   "description": "Render foldable indentation guides in CodeMirror",
   "version": "1.0.0",
+  "keywords": [
+    "codemirror",
+    "codemirror6",
+    "editor",
+    "indentation",
+    "extension",
+    "fold",
+    "guides"
+  ],
   "author": {
     "name": "Vladislav Koncha",
     "email": "vla.koncha@gmail.com"

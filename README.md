@@ -1,5 +1,7 @@
 # CodeMirror Foldable Indentation Guides
 
+[![npm version](https://img.shields.io/npm/v/codemirror-foldable-indentation-guides)](https://www.npmjs.com/package/codemirror-foldable-indentation-guides)
+
 A CodeMirror extension that renders indentation guides that can be folded on click.
 Utilizes [@replit/codemirror-indentation-markers](https://github.com/replit/codemirror-indentation-markers) for indentation logic.
 
