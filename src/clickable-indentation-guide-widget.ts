@@ -34,9 +34,9 @@ export class ClickableIndentationGuideWidget extends WidgetType {
     wrap.dataset.line = String(this.lineNumber);
 
     for (let i = this.styles?.hideFirstIndent ? 1 : 0; i < this.level; i++) {
-      const button = wrap.appendChild(
-        document.createElement(this.styles?.foldOnClick ? 'button' : 'div')
-      );
+      /** span to not mess up with keyboard focuses */
+      const button = wrap.appendChild(document.createElement('span'));
+
       button.className = 'cm-indentation-guide-button';
       button.style.cursor = this.styles?.foldOnClick ? 'pointer' : 'text';
       button.style.setProperty(
