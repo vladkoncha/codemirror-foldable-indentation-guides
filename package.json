@@ -1,7 +1,7 @@
 {
   "name": "codemirror-foldable-indentation-guides",
   "description": "Render foldable indentation guides in CodeMirror",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "keywords": [
     "codemirror",
     "codemirror6",
