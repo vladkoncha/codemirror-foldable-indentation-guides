@@ -39,10 +39,14 @@ export function indentTheme(
       '--indent-background-highlight-hover-color': colors.backgroundHoverDark,
     },
 
+    '.cm-line': {
+      position: 'relative',
+    },
+
     '.cm-indentation-guide': {
       position: 'absolute',
       display: 'inline-block',
-      height: '1lh',
+      height: '100%',
     },
 
     '.cm-indentation-guide-button': {
